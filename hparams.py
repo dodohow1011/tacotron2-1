@@ -90,6 +90,11 @@ def create_hparams(hparams_string=None, verbose=False):
         tf_decay_rate = 0.1,
         start_tf = 0,
 
+        ################################
+        ############## VAE #############
+        ################################
+        z_dim = 256,
+
         weight_decay=1e-6,
         grad_clip_thresh=1.0,
         batch_size=8,

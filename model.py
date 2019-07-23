@@ -35,6 +35,11 @@ class VAE(nn.Module):
             inputs = self.reference_encoder(inputs)
             mu, log_var = self.encoder(inputs)
             z = self.reparameterize(mu, log_var)
+
+        else:
+            mu = -1
+            log_var = -1
+            z = torch.randn_like(torch.zeros((hparams.batch_size, hparams.z_dim)))
         return z, mu, log_var
 
 class LocationLayer(nn.Module):
