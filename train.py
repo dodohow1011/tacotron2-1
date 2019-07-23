@@ -15,9 +15,10 @@ from data_utils import TextMelLoader, TextMelCollate
 from loss_function import Tacotron2Loss
 from logger import Tacotron2Logger
 from hparams import create_hparams
+from torchsummary import summary
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 
 def reduce_tensor(tensor, n_gpus):
@@ -205,18 +206,24 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
 
     model.train()
     is_overflow = False
-    miniepoch = hparams.epochs / 10
+    print ("Total Epoch: {}".format(hparams.epochs))
+    print ("Batch Size: {}".format(hparams.batch_size))
+    ss_rate = hparams.start_tf
     # ================ MAIN TRAINNIG LOOP! ===================
     for epoch in range(epoch_offset, hparams.epochs):
         print("Epoch: {}".format(epoch))
         for i, batch in enumerate(train_loader):
             start = time.perf_counter()
+            if iteration+1 > hparams.lr_start_decay and (iteration-49999) % hparams.lr_decay_step == 0 and learning_rate > lr_last:
+                learning_rate = learning_rate * hparam.lr_decay_rate
+                ss_rate = ss_rate + hparams.tf_decay_rate
             for param_group in optimizer.param_groups:
                 param_group['lr'] = learning_rate
 
             model.zero_grad()
             x, y = model.parse_batch(batch)
-            y_pred = model(x, epoch // miniepoch)
+            print ("Schedule sampling rate: {}, lr: {:2f}".format(ss_rate, learning_rate))
+            y_pred = model(x,ss_rate)
 
             loss = criterion(y_pred, y)
             if hparams.distributed_run:

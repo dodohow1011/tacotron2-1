@@ -9,7 +9,7 @@ def create_hparams(hparams_string=None, verbose=False):
         ################################
         # Experiment Parameters        #
         ################################
-        epochs=100,
+        epochs=500,
         iters_per_checkpoint=1000,
         seed=1234,
         dynamic_loss_scaling=True,
@@ -35,8 +35,8 @@ def create_hparams(hparams_string=None, verbose=False):
         max_wav_value=32768.0,
         sampling_rate=16000,
         filter_length=1024,
-        hop_length=256,
-        win_length=1024,
+        hop_length=200,
+        win_length=800,
         n_mel_channels=80,
         mel_fmin=0.0,
         mel_fmax=8000.0,
@@ -78,7 +78,18 @@ def create_hparams(hparams_string=None, verbose=False):
         # Optimization Hyperparameters #
         ################################
         use_saved_learning_rate=False,
-        learning_rate=1e-3,
+        learning_rate=1e-4,
+        lr_last=1e-5,
+        lr_decay_rate=0.8,
+        lr_start_decay=50000,
+        lr_decay_step=25000,
+        
+        ################################
+        ####### Schedule Sampling ######
+        ################################
+        tf_decay_rate = 0.1,
+        start_tf = 0,
+
         weight_decay=1e-6,
         grad_clip_thresh=1.0,
         batch_size=8,

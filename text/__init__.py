@@ -2,6 +2,7 @@
 import re
 from text import cleaners
 from text.symbols import symbols
+import sys
 
 
 # Mappings from symbol to numeric ID and vice versa:
@@ -36,6 +37,10 @@ def text_to_sequence(text, cleaner_names):
     sequence += _symbols_to_sequence(_clean_text(m.group(1), cleaner_names))
     sequence += _arpabet_to_sequence(m.group(2))
     text = m.group(3)
+
+  '''print (text)
+  print (sequence)
+  sys.exit()'''
 
   return sequence
 
