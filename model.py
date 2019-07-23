@@ -6,7 +6,36 @@ from torch.nn import functional as F
 from layers import ConvNorm, LinearNorm
 from utils import to_gpu, get_mask_from_lengths
 import numpy as np
+import hparams
 
+class VAE(nn.Module):
+    def __init__(self, input_dim, hidden_dim, training=True):
+        super(VAE, self).__init()
+        self.hidden_dim = hidden_dim
+        self.training = training
+        self.input_dim - input_dim
+        self.fc_h = nn.Linear(self.input_dim, self.hidden_dim)
+        self.fc1 = nn.Linear(self.hidden_dim, hparams.z_dim)
+        self.fc2 = nn.Linear(self.hidden_dim, hparams.z_dim)
+        self.relu = nn.ReLU()
+
+        self.reference_encoder = ReferenceEncoder()
+
+    def encoder(self, inputs):
+        e = self.fc_h(inputs)
+        return self.fc1(e), self.fc2(e)
+
+    def reparameterize(self, mu, log_var):
+        std = torch.exp(log_var*0.5)
+        eps = torch.randn_like(std)
+        return mu + std * eps
+    
+    def forward(self, inputs):
+        if self.training:
+            inputs = self.reference_encoder(inputs)
+            mu, log_var = self.encoder(inputs)
+            z = self.reparameterize(mu, log_var)
+        return z, mu, log_var
 
 class LocationLayer(nn.Module):
     def __init__(self, attention_n_filters, attention_kernel_size,
